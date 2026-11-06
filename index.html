@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Huisbezoek energiecoach aanvragen – Energierijk Nijmegen</title>
+<meta name="description" content="Vraag een huisbezoek aan van een energiecoach van Energierijk Nijmegen.">
+<link rel="icon" href="icons/icon-192.png">
+<style>
+@font-face{font-family:'Asap';src:url('fonts/asap.woff') format('woff');font-weight:100 900;font-display:swap}
+:root{
+  --petrol:#005975;--petrol-800:#003a4c;--petrol-600:#00475e;--petrol-100:#d9e6ea;--petrol-50:#ebf2f4;
+  --magenta:#e20675;--magenta-donker:#b8005c;--blauw:#1c98ce;--groen:#7bb312;--wit:#fff;
+  --verloop:linear-gradient(90deg,#e20675 0%,#1c98ce 50%,#7bb312 100%);
+  --radius:18px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Asap',system-ui,sans-serif;font-size:17px;line-height:1.5;color:#17323c;background:var(--petrol-50)}
+.balk{height:6px;background:var(--verloop)}
+header.top{background:var(--wit);padding:14px 20px}
+header.top .in{max-width:760px;margin:0 auto;display:flex;align-items:center}
+header.top img{height:40px;display:block}
+.hero{position:relative;overflow:hidden;background:var(--petrol);color:#fff;padding:40px 20px 72px}
+.hero::before{content:"";position:absolute;right:-60px;top:-40px;width:340px;height:340px;background:url(icons/beeldmerk-wit-transparant.svg) no-repeat center/contain;opacity:.12}
+.hero .in{position:relative;max-width:760px;margin:0 auto}
+.hero h1{margin:0 0 12px;font-size:clamp(28px,6vw,40px);line-height:1.15;font-weight:800}
+.hero p{margin:0;font-size:19px;max-width:560px;color:#e6f0f3}
+main{max-width:760px;margin:-44px auto 40px;padding:0 16px;position:relative}
+.kaart{background:var(--wit);border-radius:var(--radius);padding:26px 24px;box-shadow:0 6px 24px rgba(0,58,76,.12);margin-bottom:18px}
+.kaart h2{margin:0 0 16px;font-size:20px;color:var(--petrol);font-weight:700}
+.rij{display:grid;gap:14px;grid-template-columns:1fr 1fr}
+.rij.drie{grid-template-columns:1fr 1fr}
+.veld{margin-bottom:14px}
+.veld.vol{grid-column:1/-1}
+label.l,.legende{display:block;font-weight:600;margin-bottom:6px;color:var(--petrol-800)}
+.opt{font-weight:400;color:#5a7782}
+input[type=text],input[type=email],input[type=tel],textarea{
+  width:100%;font:inherit;padding:12px 14px;border:2px solid var(--petrol-100);border-radius:12px;background:#fff;color:inherit;transition:border-color .15s,box-shadow .15s}
+textarea{min-height:130px;resize:vertical}
+input:focus,textarea:focus{outline:none;border-color:var(--blauw);box-shadow:0 0 0 4px rgba(28,152,206,.2)}
+.veld.fout input,.veld.fout textarea{border-color:var(--magenta)}
+.veld.fout .tegels,.veld.fout .vink{outline:2px solid var(--magenta);outline-offset:4px;border-radius:12px}
+.melding{display:none;color:var(--magenta-donker);font-size:15px;margin-top:5px;font-weight:600}
+.veld.fout .melding{display:block}
+.hint{font-size:15px;color:#5a7782;margin:0 0 8px}
+.tegels{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+.tegel{position:relative}
+.tegel input{position:absolute;opacity:0;inset:0;width:100%;height:100%;cursor:pointer;margin:0}
+.tegel span{display:block;padding:12px 14px;border:2px solid var(--petrol-100);border-radius:12px;font-weight:500;transition:all .15s;background:#fff}
+.tegel input:checked + span{border-color:var(--petrol);background:var(--petrol-50);color:var(--petrol-800);box-shadow:inset 0 0 0 1px var(--petrol)}
+.tegel input:focus-visible + span{box-shadow:0 0 0 4px rgba(28,152,206,.3)}
+#andersVeld{margin-top:10px;display:none}
+.vink{display:flex;gap:12px;align-items:flex-start;cursor:pointer}
+.vink input{flex:none;width:24px;height:24px;margin:2px 0 0;accent-color:var(--petrol)}
+.vink span{font-weight:400}
+.notitie{display:none;background:#fdeaf3;border-left:5px solid var(--magenta);border-radius:12px;padding:14px 16px;margin:4px 0 14px}
+.notitie.zicht{display:block}
+.notitie p{margin:0 0 12px}
+.notitie .vink{margin:0}
+.knop{width:100%;font:inherit;font-weight:700;font-size:19px;color:#fff;background:var(--magenta);border:0;border-radius:999px;padding:16px 24px;cursor:pointer;transition:background .15s,transform .05s}
+.knop:hover{background:var(--magenta-donker)}
+.knop:active{transform:translateY(1px)}
+.knop[disabled]{opacity:.6;cursor:wait}
+.klein{font-size:14.5px;color:#5a7782;margin:12px 0 0;text-align:center}
+.klein a,.privacy a{color:var(--petrol)}
+.privacy{font-size:15px;color:#46636e;margin:14px 0 0}
+.fout-banner{display:none;background:#fdeaf3;border:2px solid var(--magenta);color:var(--magenta-donker);border-radius:12px;padding:12px 14px;margin-bottom:14px;font-weight:600}
+.fout-banner.zicht{display:block}
+.demo{display:none;background:#fff6d6;color:#6a5200;border-bottom:1px solid #e9d27a;text-align:center;padding:8px 12px;font-size:14px}
+.demo.zicht{display:block}
+.hp{position:absolute;left:-9999px;height:0;overflow:hidden}
+#bedankt{display:none;text-align:center;padding:40px 24px}
+#bedankt h2{font-size:28px;margin-bottom:10px}
+#bedankt p{font-size:18px;margin:0 0 20px}
+.btn-link{display:inline-block;background:var(--petrol);color:#fff;text-decoration:none;font-weight:700;padding:13px 26px;border-radius:999px}
+.btn-link:hover{background:var(--petrol-800)}
+footer{text-align:center;font-size:14px;color:#5a7782;padding:0 16px 30px}
+@media(max-width:560px){.rij,.tegels{grid-template-columns:1fr}.kaart{padding:22px 18px}}
+</style>
+</head>
+<body>
+<div class="balk"></div>
+<div class="demo" id="demo">Demomodus: het formulier is nog niet gekoppeld aan de Google Sheet, aanvragen worden niet verzonden.</div>
+<header class="top"><div class="in"><img src="icons/logo.svg" alt="Energierijk Nijmegen"></div></header>
+
+<section class="hero">
+  <div class="in">
+    <h1>Aanvragen huisbezoek energiecoach</h1>
+    <p>Vraag een huisbezoek aan van een energiecoach. De energiecoach kijkt mee naar jouw situatie en geeft je onafhankelijk en betrouwbaar advies.</p>
+  </div>
+</section>
+
+<main>
+<form id="form" novalidate autocomplete="on">
+  <div class="fout-banner" id="foutBanner" role="alert"></div>
+
+  <div class="kaart">
+    <h2>Jouw gegevens</h2>
+    <div class="rij">
+      <div class="veld"><label class="l" for="voornaam">Voornaam</label>
+        <input type="text" id="voornaam" name="voornaam" autocomplete="given-name" maxlength="60">
+        <div class="melding">Vul je voornaam in.</div></div>
+      <div class="veld"><label class="l" for="achternaam">Achternaam</label>
+        <input type="text" id="achternaam" name="achternaam" autocomplete="family-name" maxlength="80">
+        <div class="melding">Vul je achternaam in.</div></div>
+      <div class="veld"><label class="l" for="email">E-mailadres</label>
+        <input type="email" id="email" name="email" autocomplete="email" inputmode="email" maxlength="120">
+        <div class="melding">Vul een geldig e-mailadres in.</div></div>
+      <div class="veld"><label class="l" for="telefoon">Telefoonnummer</label>
+        <input type="tel" id="telefoon" name="telefoon" autocomplete="tel" inputmode="tel" maxlength="20">
+        <div class="melding">Vul een geldig telefoonnummer in.</div></div>
+    </div>
+  </div>
+
+  <div class="kaart">
+    <h2>Jouw adres</h2>
+    <div class="rij">
+      <div class="veld"><label class="l" for="straat">Straat</label>
+        <input type="text" id="straat" name="straat" autocomplete="address-line1" maxlength="80">
+        <div class="melding">Vul je straatnaam in.</div></div>
+      <div class="veld"><label class="l" for="huisnummer">Huisnummer <span class="opt">(met toevoeging)</span></label>
+        <input type="text" id="huisnummer" name="huisnummer" maxlength="12">
+        <div class="melding">Vul je huisnummer in.</div></div>
+      <div class="veld"><label class="l" for="postcode">Postcode</label>
+        <input type="text" id="postcode" name="postcode" autocomplete="postal-code" maxlength="8" placeholder="1234 AB">
+        <div class="melding">Vul een geldige postcode in, bijvoorbeeld 6511 AB.</div></div>
+      <div class="veld"><label class="l" for="woonplaats">Woonplaats</label>
+        <input type="text" id="woonplaats" name="woonplaats" autocomplete="address-level2" maxlength="60">
+        <div class="melding">Vul je woonplaats in.</div></div>
+    </div>
+
+    <div class="notitie" id="buitenNotitie" aria-live="polite">
+      <p>De energiecoaches van Energierijk Nijmegen zijn actief in de gemeente Nijmegen. Wanneer je dit aanvraagformulier invult en niet in Nijmegen woont, sturen we je aanvraag door naar de energiecoaches die actief zijn in jouw gemeente.</p>
+      <div class="veld" style="margin:0" id="veldToestemming">
+        <label class="vink"><input type="checkbox" id="toestemming" name="toestemming">
+          <span>Ik geef toestemming om mijn aanvraag en gegevens door te sturen naar de energiecoaches in mijn gemeente.</span></label>
+        <div class="melding">Zonder jouw toestemming kunnen we je aanvraag niet doorsturen.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="kaart">
+    <h2>Jouw situatie</h2>
+    <div class="veld" id="veldWoon">
+      <span class="legende">Wat is jouw woonsituatie?</span>
+      <div class="tegels" id="woonTegels"></div>
+      <div id="andersVeld"><input type="text" id="andersTekst" maxlength="80" placeholder="Anders, namelijk…" aria-label="Anders, namelijk"></div>
+      <div class="melding">Kies je woonsituatie.</div>
+    </div>
+    <div class="veld" style="margin-bottom:0" id="veldOnderwerp">
+      <label class="l" for="onderwerp">Waarvoor wil je een energiecoach langs laten komen?</label>
+      <p class="hint">Bijvoorbeeld voor isoleren, hulp bij je energierekening, je woning in het algemeen verduurzamen of een thuisbatterij. Schrijf op wat jij wilt weten of aanpakken.</p>
+      <textarea id="onderwerp" name="onderwerp" maxlength="1500"></textarea>
+      <div class="melding">Vertel kort waarvoor je de energiecoach wilt vragen.</div>
+    </div>
+  </div>
+
+  <div class="kaart">
+    <label class="vink"><input type="checkbox" id="nieuwsbrief" name="nieuwsbrief">
+      <span><strong>Ja, ik wil de nieuwsbrief ontvangen.</strong><br>Eén keer per maand het nieuws uit de wijken, actuele ontwikkelingen en interessante activiteiten in je inbox. Je kunt je op elk moment weer afmelden.</span></label>
+  </div>
+
+  <div class="hp" aria-hidden="true"><label>Laat dit leeg <input type="text" id="website" tabindex="-1" autocomplete="off"></label></div>
+
+  <button type="submit" class="knop" id="verstuur">Huisbezoek aanvragen</button>
+  <p class="privacy">Wat we met je gegevens doen, lees je in onze <a href="https://energierijknijmegen.nl/privacyverklaring/" target="_blank" rel="noopener">privacyverklaring</a>.</p>
+</form>
+
+<div class="kaart" id="bedankt" role="status">
+  <h2 id="bedanktTitel">Bedankt voor je aanvraag!</h2>
+  <p id="bedanktTekst">We nemen contact met je op.</p>
+  <a class="btn-link" href="https://energierijknijmegen.nl/">Naar onze website</a>
+</div>
+</main>
+<footer>Energierijk Nijmegen · <a href="mailto:info@energierijknijmegen.nl" style="color:inherit">info@energierijknijmegen.nl</a></footer>
+
+<script>
+/* ── Instellingen ───────────────────────────────────────── */
+const CONFIG = {
+  ENDPOINT_URL: 'https://script.google.com/macros/s/AKfycby87_Dfk2R5tU43k4FrSkn3-63blA3_hcIzOMB6KaJ3doIVyuePjHM7Q9hVC2Crk2G8/exec',
+  SLEUTEL: 'huisbezoek-K7x9Qm2Rv4Tn-2026',
+  NIJMEGEN_PLAATSEN: ['nijmegen', 'lent'],
+  BRON: 'Website huisbezoek',
+  CONTACT_EMAIL: 'info@energierijknijmegen.nl'
+};
+
+const WOON = [
+  'Koopwoning','Koopappartement',
+  'Huurwoning – woningcorporatie','Huurwoning – particuliere verhuurder',
+  'Huurappartement – woningcorporatie','Huurappartement – particuliere verhuurder',
+  'Studentenkamer of kamer','Woonboot, tiny house of woonwagen','Anders'
+];
+const ECHT = /^https:\/\/script\.google(usercontent)?\.com\//.test(CONFIG.ENDPOINT_URL);
+const $ = id => document.getElementById(id);
+const form = $('form');
+if (!ECHT) $('demo').classList.add('zicht');
+
+/* Woonsituatie-tegels */
+$('woonTegels').innerHTML = WOON.map((w, i) =>
+  `<label class="tegel"><input type="radio" name="woon" value="${w}"><span>${w}</span></label>`).join('');
+form.addEventListener('change', e => {
+  if (e.target.name === 'woon') {
+    $('andersVeld').style.display = e.target.value === 'Anders' ? 'block' : 'none';
+    wis($('veldWoon'));
+  }
+});
+
+/* Buiten Nijmegen? */
+function plaatsSchoon(s){ return s.trim().toLowerCase().replace(/^gemeente\s+/, '').replace(/\s+/g,' '); }
+function buitenNijmegen(){
+  const p = plaatsSchoon($('woonplaats').value);
+  return p.length > 1 && !CONFIG.NIJMEGEN_PLAATSEN.includes(p);
+}
+function werkNotitieBij(){
+  const buiten = buitenNijmegen();
+  $('buitenNotitie').classList.toggle('zicht', buiten);
+  if (!buiten) { $('toestemming').checked = false; wis($('veldToestemming')); }
+}
+$('woonplaats').addEventListener('input', werkNotitieBij);
+$('woonplaats').addEventListener('blur', werkNotitieBij);
+
+/* Postcode netjes maken */
+function postcodeSchoon(v){
+  const m = v.replace(/\s+/g,'').toUpperCase().match(/^([1-9]\d{3})([A-Z]{2})$/);
+  return m ? m[1] + ' ' + m[2] : null;
+}
+$('postcode').addEventListener('blur', () => { const p = postcodeSchoon($('postcode').value); if (p) $('postcode').value = p; });
+
+/* Validatie */
+function veldVan(el){ return el.closest('.veld'); }
+function wis(v){ v && v.classList.remove('fout'); }
+function fout(v){ v.classList.add('fout'); }
+form.addEventListener('input', e => { const v = veldVan(e.target); if (v) wis(v); });
+
+function controleer(){
+  let eerste = null;
+  const eis = (cond, veld) => { if (!cond) { fout(veld); eerste = eerste || veld; } };
+  const tekst = id => $(id).value.trim();
+  eis(tekst('voornaam').length > 0, veldVan($('voornaam')));
+  eis(tekst('achternaam').length > 0, veldVan($('achternaam')));
+  eis(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(tekst('email')), veldVan($('email')));
+  eis(tekst('telefoon').replace(/\D/g,'').length >= 8 && /^[\d\s+()\-]+$/.test(tekst('telefoon')), veldVan($('telefoon')));
+  eis(tekst('straat').length > 0, veldVan($('straat')));
+  eis(/\d/.test(tekst('huisnummer')), veldVan($('huisnummer')));
+  eis(!!postcodeSchoon(tekst('postcode')), veldVan($('postcode')));
+  eis(tekst('woonplaats').length > 0, veldVan($('woonplaats')));
+  if (buitenNijmegen()) eis($('toestemming').checked, $('veldToestemming'));
+  eis(!!form.querySelector('input[name=woon]:checked'), $('veldWoon'));
+  eis(tekst('onderwerp').length > 2, $('veldOnderwerp'));
+  return eerste;
+}
+
+/* Versturen */
+let aanvraagId = null;
+const maakId = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2));
+
+function toonFout(tekst){ const b = $('foutBanner'); b.textContent = tekst; b.classList.add('zicht'); b.scrollIntoView({block:'center'}); }
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  $('foutBanner').classList.remove('zicht');
+  if ($('website').value) return;               // honeypot
+  const eerste = controleer();
+  if (eerste) { eerste.scrollIntoView({block:'center'}); const i = eerste.querySelector('input,textarea'); i && i.focus({preventScroll:true}); return; }
+  if (!ECHT) { toonFout('Demomodus: dit formulier is nog niet gekoppeld aan de Google Sheet. Je aanvraag is niet verzonden.'); return; }
+
+  aanvraagId = aanvraagId || maakId();           // zelfde ID bij opnieuw proberen: geen dubbele aanvragen
+  const woon = form.querySelector('input[name=woon]:checked').value;
+  const buiten = buitenNijmegen();
+  const item = {
+    id: aanvraagId,
+    ingevuldOp: new Date().toISOString(),
+    voornaam: $('voornaam').value.trim(),
+    achternaam: $('achternaam').value.trim(),
+    email: $('email').value.trim(),
+    telefoon: $('telefoon').value.trim(),
+    straat: $('straat').value.trim(),
+    huisnummer: $('huisnummer').value.trim(),
+    postcode: postcodeSchoon($('postcode').value.trim()),
+    woonplaats: $('woonplaats').value.trim(),
+    buitenNijmegen: buiten,
+    toestemmingDoorsturen: buiten && $('toestemming').checked,
+    woonsituatie: woon === 'Anders' && $('andersTekst').value.trim() ? 'Anders: ' + $('andersTekst').value.trim() : woon,
+    onderwerp: $('onderwerp').value.trim(),
+    nieuwsbrief: $('nieuwsbrief').checked,
+    bron: CONFIG.BRON
+  };
+  const knop = $('verstuur'); knop.disabled = true; knop.textContent = 'Bezig met versturen…';
+  try {
+    const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 20000);
+    const res = await fetch(CONFIG.ENDPOINT_URL, { method: 'POST', body: JSON.stringify({ sleutel: CONFIG.SLEUTEL, items: [item] }), signal: ctrl.signal });
+    clearTimeout(t);
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.fout || 'onbekend');
+    $('bedanktTitel').textContent = 'Bedankt voor je aanvraag, ' + item.voornaam + '!';
+    $('bedanktTekst').textContent = buiten
+      ? 'We sturen je aanvraag door naar de energiecoaches in jouw gemeente. Zij nemen contact met je op.'
+      : 'We nemen contact met je op om een afspraak te maken voor het huisbezoek.';
+    form.style.display = 'none'; $('bedankt').style.display = 'block';
+    window.scrollTo({top:0, behavior:'smooth'});
+  } catch (err) {
+    toonFout('Het versturen is niet gelukt. Controleer je internetverbinding en probeer het nog eens. Lukt het nog steeds niet? Mail dan naar ' + CONFIG.CONTACT_EMAIL + '.');
+    knop.disabled = false; knop.textContent = 'Huisbezoek aanvragen';
+  }
+});
+</script>
+</body>
+</html>
